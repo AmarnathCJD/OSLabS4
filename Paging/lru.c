@@ -1,88 +1,86 @@
-#include <stdio.h>
+#include<stdio.h>
+#include<stdlib.h>
 
-#define MAX_FRAMES 100
-#define MAX_PAGES 100
-
-struct frames {
-    int content;
-    int count;
+struct str {
+    int c;
+    int e;
+    int p;
 };
 
-int main() {
-    int i, j, k, p, f, pf = 0, id = 0, cnt = 1, min;
-    int page[MAX_PAGES];
-    struct frames frame[MAX_FRAMES];
+void main() {
+    struct str fr[100];
+
+    int n, m;
 
     printf("Enter the number of pages: ");
-    scanf("%d", &p);
-    
-    printf("Enter the referencing string: ");
-    for (i = 0; i < p; i++) {
-        scanf("%d", &page[i]);
-    }
-    
+    scanf("%d", &n);
+
     printf("Enter the number of frames: ");
-    scanf("%d", &f);
-    
-    for (i = 0; i < f; i++) {
-        frame[i].content = -1;
-        frame[i].count = 0;
+    scanf("%d", &m);
+
+    int pg[100] = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1};
+
+    for (int i = 0; i<m; i++) {
+        fr[i].e = 0;
+        fr[i].p = -1;
+        fr[i].c = -1;
     }
 
-    printf("\nReference String   |   Frames   |   Status\n");
-    printf("------------------------------------------\n");
+    int pos = 0, h = 0, mz = 0;
 
-    for (i = 0; i < p; i++) {
-        int hit = 0;
-        printf("        %-9d  |", page[i]);
-
-        for (j = 0; j < f; j++) {
-            if (frame[j].content == page[i]) {
-                hit = 1;
-                frame[j].count = cnt++; 
+    for (int i = 0; i<n; i++) {
+        int found = -1;
+        for (int j = 0; j<m; j++) {
+            if (fr[j].c == pg[i]) {
+                found = j;
+                fr[j].p = pos+1;
+                pos += 1;
+                h++;
                 break;
             }
         }
 
-        if (hit) {
-            for (j = 0; j < f; j++) {
-                if (frame[j].content != -1) {
-                    printf(" %-2d", frame[j].content);
-                } else {
-                    printf(" - ");
+        if (found == -1) {
+            int entered = -1;
+            for (int j = 0; j<m; j++) {
+                if (fr[j].e == 0) {
+                    fr[j].c = pg[i];
+                    fr[j].p = pos+1;
+                    pos += 1;
+                    fr[j].e = 1;
+                    entered = 1;
+                    break;
                 }
             }
-            printf("  |   HIT\n");
-        } else {
-            if (id < f) {
-                frame[id].content = page[i];
-                frame[id].count = cnt++;
-                id++;
-            } else {
-                min = 0;
-                for (k = 1; k < f; k++) {
-                    if (frame[k].count < frame[min].count) {
-                        min = k;
+
+            if (entered == -1) {
+                int _p = -1;
+                for (int j = 0; j<m; j++) {
+                    if (fr[j].p <= fr[_p].p || _p == -1) {
+                        _p = j;
                     }
                 }
-                frame[min].content = page[i];
-                frame[min].count = cnt++;
-            }
-            pf++;
 
-            for (j = 0; j < f; j++) {
-                if (frame[j].content != -1) {
-                    printf(" %-2d", frame[j].content);
-                } else {
-                    printf(" - ");
-                }
+                fr[_p].c = pg[i];
+                fr[_p].p = pos+1;
+                pos += 1;
             }
-            printf("  |   MISS\n");
+            mz++;
+
+            printf("miss: ");
+            for (int j = 0; j<m; j++) {
+                printf("%d ", fr[j].c);
+            }
+            printf("\n");
+        } else {
+            printf("hit:  ");
+            for (int j = 0; j<m; j++) {
+                printf("%d ", fr[j].c);
+            }
+            printf("\n");
         }
     }
 
-    printf("------------------------------------------\n");
-    printf("\nTOTAL PAGE FAULTS: %d\n", pf);
-
-    return 0;
+    printf("pos: %d, h: %d, m: %d\n", pos, h, mz);
 }
+
